@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"iniciador-sdk/iniciador/auth"
+	"iniciador-sdk/iniciador/participants"
 )
 
 func main() {
@@ -18,14 +19,16 @@ func main() {
 		return
 	}
 
-	authInterfaceOutput, err := authClient.AuthInterface()
+	accessToken := authOutput.AccessToken
+
+	filters := &participants.ParticipantsFilter{}
+
+	participants, err := participants.Participants(accessToken, filters, authClient)
 	if err != nil {
-		fmt.Println("Authentication failed:", err)
+		fmt.Println("Get Participants failed:", err)
 		return
 	}
 
-	accessToken := authOutput.AccessToken
-
 	fmt.Println("Auth:", accessToken)
-	fmt.Println("Auth Interface:", authInterfaceOutput)
+	fmt.Println("Participants:", participants)
 }

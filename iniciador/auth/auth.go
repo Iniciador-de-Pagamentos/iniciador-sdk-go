@@ -19,23 +19,27 @@ type AuthInterfaceOutput struct {
 }
 
 type AuthClient struct {
-	clientID     string
-	clientSecret string
-	environment  string
+	ClientID     string
+	ClientSecret string
+	Environment  string
 }
 
 func NewAuthClient(clientID, clientSecret, environment string) *AuthClient {
 	return &AuthClient{
-		clientID:     clientID,
-		clientSecret: clientSecret,
-		environment:  utils.SetEnvironment(environment),
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+		Environment:  utils.SetEnvironment(environment),
 	}
+}
+
+func (c *AuthClient) GetEnvironment() string {
+	return c.Environment
 }
 
 func (c *AuthClient) Auth() (*AuthOutput, error) {
 	requestBody := map[string]interface{}{
-		"clientId":     c.clientID,
-		"clientSecret": c.clientSecret,
+		"clientId":     c.ClientID,
+		"clientSecret": c.ClientSecret,
 	}
 	requestBodyBytes, err := json.Marshal(requestBody)
 	if err != nil {
@@ -43,7 +47,7 @@ func (c *AuthClient) Auth() (*AuthOutput, error) {
 	}
 
 	response, err := http.Post(
-		c.environment+"/auth",
+		c.Environment+"/auth",
 		"application/json",
 		bytes.NewBuffer(requestBodyBytes),
 	)
@@ -63,8 +67,8 @@ func (c *AuthClient) Auth() (*AuthOutput, error) {
 
 func (c *AuthClient) AuthInterface() (*AuthInterfaceOutput, error) {
 	requestBody := map[string]interface{}{
-		"clientId":     c.clientID,
-		"clientSecret": c.clientSecret,
+		"clientId":     c.ClientID,
+		"clientSecret": c.ClientSecret,
 	}
 	requestBodyBytes, err := json.Marshal(requestBody)
 	if err != nil {
@@ -72,7 +76,7 @@ func (c *AuthClient) AuthInterface() (*AuthInterfaceOutput, error) {
 	}
 
 	response, err := http.Post(
-		c.environment+"/auth/interface",
+		c.Environment+"/auth/interface",
 		"application/json",
 		bytes.NewBuffer(requestBodyBytes),
 	)
