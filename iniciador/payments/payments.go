@@ -147,7 +147,13 @@ func Send(accessToken string, payment *PaymentInitiationPayload, authClient *aut
 	return &paymentInitiationPayload, nil
 }
 
-func Get(accessToken string, paymentId string, authClient *auth.AuthClient) (*PaymentInitiationPayload, error) {
+func Get(accessToken string, authClient *auth.AuthClient) (*PaymentInitiationPayload, error) {
+	paymentId, err := utils.ExtractPaymentIDFromJWTPayload(accessToken)
+	if err != nil {
+		fmt.Println("Something went wrong trying to get token data:", err)
+		return nil, err
+	}
+
 	url := fmt.Sprintf("%s/payments/%s", authClient.Environment, paymentId)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -171,7 +177,13 @@ func Get(accessToken string, paymentId string, authClient *auth.AuthClient) (*Pa
 	return &payload, nil
 }
 
-func Status(accessToken string, paymentId string, authClient *auth.AuthClient) (*PaymentStatusPayload, error) {
+func Status(accessToken string, authClient *auth.AuthClient) (*PaymentStatusPayload, error) {
+	paymentId, err := utils.ExtractPaymentIDFromJWTPayload(accessToken)
+	if err != nil {
+		fmt.Println("Something went wrong trying to get token data:", err)
+		return nil, err
+	}
+
 	url := fmt.Sprintf("%s/payments/%s/status", authClient.Environment, paymentId)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {

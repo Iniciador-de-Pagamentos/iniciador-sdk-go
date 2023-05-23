@@ -131,7 +131,7 @@ func TestSendGetStatus(t *testing.T) {
 	authClient.Environment = server.URL
 
 	// Execute the Get function
-	retrievedPayment, err := payments.Get("testAccessToken", payment.ID, authClient)
+	retrievedPayment, err := payments.Get("testAccessToken", authClient)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
@@ -186,7 +186,7 @@ func TestSendGetStatus(t *testing.T) {
 	authClient.Environment = server.URL
 
 	// Execute the Status function
-	paymentStatus, err := payments.Status("testAccessToken", payment.ID, authClient)
+	paymentStatus, err := payments.Status("testAccessToken", authClient)
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
