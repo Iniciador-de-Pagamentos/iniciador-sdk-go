@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-type Error struct {
-	Messages []string `json:"error"`
-}
-
 func SetEnvironment(environment string) string {
 	switch environment {
 	case "dev":
@@ -25,6 +21,15 @@ func SetEnvironment(environment string) string {
 	default:
 		panic(fmt.Errorf("Something went wrong, verify environment value."))
 	}
+}
+
+type Error struct {
+	ErrorCode  string   `json:"errorCode"`
+	Message    []string `json:"message"`
+	Method     string   `json:"method"`
+	Path       string   `json:"path"`
+	StatusCode int      `json:"statusCode"`
+	Timestamp  string   `json:"timestamp"`
 }
 
 func HandleResponse(response *http.Response, output interface{}) error {
@@ -49,9 +54,38 @@ func HandleResponse(response *http.Response, output interface{}) error {
 		return fmt.Errorf("failed to decode error response: %v", err)
 	}
 
-	if len(errResponse.Messages) > 0 {
-		return fmt.Errorf("request failed with status code %d: %s", response.StatusCode, strings.Join(errResponse.Messages, ", "))
+	if len(errResponse.Message) > 0 {
+		return fmt.Errorf("request failed with status code %d: %s", errResponse.StatusCode, strings.Join(errResponse.Message, ", "))
 	}
 
 	return fmt.Errorf("request failed with status code %d", response.StatusCode)
+}
+
+func MarshalWithoutEmptyFields(payload interface{}) ([]byte, error) {
+	data, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+
+	var m map[string]interface{}
+	err = json.Unmarshal(data, &m)
+	if err != nil {
+		return nil, err
+	}
+
+	nonEmptyFields := make(map[string]interface{})
+	for k, v := range m {
+		if v != nil {
+			switch value := v.(type) {
+			case string:
+				if value != "" {
+					nonEmptyFields[k] = v
+				}
+			default:
+				nonEmptyFields[k] = v
+			}
+		}
+	}
+
+	return json.Marshal(nonEmptyFields)
 }

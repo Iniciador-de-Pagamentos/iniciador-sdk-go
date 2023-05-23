@@ -36,7 +36,7 @@ type ParticipantsFilter struct {
 	BeforeCursor      string
 }
 
-func Participants(accessToken string, filters *ParticipantsFilter, authClient *auth.AuthClient) (*ParticipantFilterOutput, error) {
+func GetParticipants(accessToken string, filters *ParticipantsFilter, authClient *auth.AuthClient) (*ParticipantFilterOutput, error) {
 	environment := authClient.GetEnvironment()
 	filterParams := make(url.Values)
 
